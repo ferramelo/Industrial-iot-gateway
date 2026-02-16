@@ -1,0 +1,16 @@
+# Docker volumes e log
+*.log
+.env
+
+# Backup files
+*.bak
+backups/
+
+# OS files
+.DS_Store
+Thumbs.db
+*~
+
+# IDE
+.vscode/
+.idea/
