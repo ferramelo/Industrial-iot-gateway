@@ -4,55 +4,39 @@
 
 Industrial IoT Gateway per integrazione protocolli OT (Modbus, OPC UA) con piattaforme IT moderne.
 
-## Architecture Diagram
+flowchart TB
+    subgraph OT["🏭 Field Level — OT"]
+        PLC1["⚙️ PLC 1\nModbus"]
+        PLC2["⚙️ PLC 2\nProfinet"]
+        SCADA["🖥️ SCADA"]
+        SENSORS["📡 Sensors"]
+    end
 
-┌─────────────────────────────────────────────────────────────┐
-│ Field Level (OT) │
-├─────────────────────────────────────────────────────────────┤
-│ │
-│ ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐ │
-│ │ PLC 1 │ │ PLC 2 │ │ SCADA │ │ Sensors │ │
-│ │ Modbus │ │ Profinet│ │ │ │ │ │
-│ └────┬────┘ └────┬────┘ └────┬────┘ └────┬────┘ │
-│ │ │ │ │ │
-└───────┼─────────────┼─────────────┼─────────────┼────────┘
-│ │ │ │
-└─────────────┴─────────────┴─────────────┘
-│
-Modbus TCP / OPC UA
-│
-┌─────────────────────────▼─────────────────────────────────┐
-│ Gateway Level (Edge Computing) │
-├────────────────────────────────────────────────────────────┤
-│ │
-│ ┌──────────────────────────────────────────────────┐ │
-│ │ Node-RED IoT Gateway │ │
-│ │ ┌──────────┐ ┌──────────┐ ┌──────────┐ │ │
-│ │ │ Modbus │ │ MQTT │ │ OPC UA │ │ │
-│ │ │ Client │ │ Broker │ │ Client │ │ │
-│ │ └──────────┘ └──────────┘ └──────────┘ │ │
-│ │ │ │
-│ │ Protocol Translation | Data Normalization │ │
-│ └──────────────────┬───────────────────────────────┘ │
-│ │ │
-└─────────────────────┼─────────────────────────────────────┘
-│
-HTTP/MQTT
-│
-┌─────────────────────▼─────────────────────────────────────┐
-│ Data & Visualization Layer │
-├────────────────────────────────────────────────────────────┤
-│ │
-│ ┌──────────────────┐ ┌──────────────────┐ │
-│ │ InfluxDB │ │ Grafana │ │
-│ │ Time-Series DB │◄────────┤ Dashboard │ │
-│ │ │ │ │ │
-│ │ - Metrics │ │ - Visualization │ │
-│ │ - Alarms │ │ - Alerting │ │
-│ │ - Historical │ │ - Reporting │ │
-│ └──────────────────┘ └──────────────────┘ │
-│ │
-└────────────────────────────────────────────────────────────┘
+    PLC1 & PLC2 & SCADA & SENSORS -->|"Modbus TCP / OPC UA"| GW
+
+    subgraph EDGE["🔀 Gateway Level — Edge Computing"]
+        subgraph GW["Node-RED IoT Gateway"]
+            MODBUS["Modbus Client"]
+            MQTT["MQTT Broker"]
+            OPCUA["OPC UA Client"]
+        end
+        NOTE["Protocol Translation | Data Normalization"]
+    end
+
+    GW -->|"HTTP / MQTT"| DB
+
+    subgraph DATA["📊 Data & Visualization Layer"]
+        DB["🗄️ InfluxDB\nTime-Series DB\n─────────────\n• Metrics\n• Alarms\n• Historical"]
+        GRAFANA["📈 Grafana\nDashboard\n─────────────\n• Visualization\n• Alerting\n• Reporting"]
+        DB -->|reads| GRAFANA
+    end
+
+    style OT fill:#0d1f2d,stroke:#00d4ff,color:#e8f4f8
+    style EDGE fill:#0b1d30,stroke:#00ff9d,color:#e8f4f8
+    style DATA fill:#0c1a28,stroke:#ff8c42,color:#e8f4f8
+    style GW fill:#0a1a25,stroke:#00ff9d,color:#e8f4f8
+    style DB fill:#1a1000,stroke:#ff8c42,color:#e8f4f8
+    style GRAFANA fill:#1a1400,stroke:#ffd166,color:#e8f4f8
 
 text
 
